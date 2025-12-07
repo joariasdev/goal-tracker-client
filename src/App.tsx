@@ -1,10 +1,7 @@
-function App() {
+import GoalForm from "./components/GoalForm";
 
-  return (
-    <h1>
-      Hello, world!
-    </h1>
-  )
+function App() {
+  return <GoalForm />;
 }
 
-export default App
+export default App;
