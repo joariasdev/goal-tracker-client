@@ -1,7 +1,13 @@
 import GoalForm from "./components/GoalForm";
+import GoalList from "./components/GoalList";
 
 function App() {
-  return <GoalForm />;
+  return (
+    <main>
+      <GoalList />
+      <GoalForm />
+    </main>
+  );
 }
 
 export default App;
