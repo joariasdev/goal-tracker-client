@@ -1,16 +1,20 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { type Goal, type GoalView } from "../models/Goal";
 
-export default function GoalForm() {
+interface GoalFormProps {
+  onRequestSubmission: () => void;
+}
+
+export default function GoalForm({ onRequestSubmission }: GoalFormProps) {
   const [title, setTitle] = useState<string>("");
 
-  function handleChange(event: ChangeEvent<HTMLInputElement>): void {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     setTitle(event.target.value);
-  }
+  };
 
-  async function handleSubmit(
+  const handleSubmit = async (
     event: FormEvent<HTMLFormElement>
-  ): Promise<Goal> {
+  ): Promise<Goal> => {
     event.preventDefault();
 
     const goalData: GoalView = { title };
@@ -26,13 +30,15 @@ export default function GoalForm() {
     const result: Goal = await response.json();
 
     setTitle("");
+    onRequestSubmission();
 
     return result;
-  }
+  };
 
   return (
     <div>
       <form onSubmit={handleSubmit}>
+        <label htmlFor="title">Add new goal: </label>
         <input
           type="text"
           id="title"

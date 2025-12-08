@@ -1,20 +1,17 @@
-import { useEffect, useState } from "react";
 import type { Goal } from "../models/Goal";
+import {type MouseEvent } from "react";
 
-export default function GoalList() {
-  const [goals, setGoals] = useState<Goal[]>([]);
+interface GoalListProps {
+  goals: Goal[];
+  onGoalClick: (event: MouseEvent<HTMLElement>) => void;
+}
 
-  useEffect(() => {
-    async function getGoals(url: string) {
-      const response = await fetch(url);
-      const result: Promise<Goal[]> = await response.json();
-      setGoals(await result);
-    }
-
-    getGoals("http://localhost:3000/goals");
-  }, [goals]);
-
-  const goalElements = goals.map((g) => <p key={g.id}>{g.title}</p>);
+export default function GoalList({ goals, onGoalClick }: GoalListProps) {
+  const goalElements = goals.map((g) => (
+    <p key={g.id} id={String(g.id)} onClick={onGoalClick}>
+      {g.title}
+    </p>
+  ));
 
   return <div>{goalElements}</div>;
 }
