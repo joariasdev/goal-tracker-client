@@ -2,10 +2,10 @@ import { useState, type ChangeEvent, type FormEvent } from "react";
 import { type Goal, type GoalView } from "../models/Goal";
 
 interface GoalFormProps {
-  onRequestSubmission: () => void;
+  syncWithDb: () => void;
 }
 
-export default function GoalForm({ onRequestSubmission }: GoalFormProps) {
+export default function GoalForm({ syncWithDb }: GoalFormProps) {
   const [title, setTitle] = useState<string>("");
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -30,7 +30,7 @@ export default function GoalForm({ onRequestSubmission }: GoalFormProps) {
     const result: Goal = await response.json();
 
     setTitle("");
-    onRequestSubmission();
+    syncWithDb();
 
     return result;
   };

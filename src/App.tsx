@@ -30,8 +30,8 @@ function App() {
   return (
     <main>
       <GoalList goals={goals} onGoalClick={handleGoalClick} />
-      <GoalForm onRequestSubmission={handleRefresh} />
-      <GoalCard goals={goals} id={selectedGoalId} />
+      <GoalForm syncWithDb={handleRefresh} />
+      <GoalCard goals={goals} id={selectedGoalId} syncWithDb={handleRefresh} />
     </main>
   );
 }

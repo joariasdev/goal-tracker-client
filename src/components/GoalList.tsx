@@ -1,5 +1,5 @@
 import type { Goal } from "../models/Goal";
-import {type MouseEvent } from "react";
+import { type MouseEvent } from "react";
 
 interface GoalListProps {
   goals: Goal[];
@@ -13,5 +13,10 @@ export default function GoalList({ goals, onGoalClick }: GoalListProps) {
     </p>
   ));
 
-  return <div>{goalElements}</div>;
+  return (
+    <div>
+      <h1>Goals</h1>
+      {goalElements}
+    </div>
+  );
 }
