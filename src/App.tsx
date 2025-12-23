@@ -3,6 +3,7 @@ import GoalForm from "./components/GoalForm";
 import GoalList from "./components/GoalList";
 import { useEffect, useState, type MouseEvent } from "react";
 import type { Goal } from "./models/Goal";
+import ApiGoalsClient from "./api/apiGoalsClient";
 
 function App() {
   const [goals, setGoals] = useState<Goal[]>([]);
@@ -18,13 +19,11 @@ function App() {
   };
 
   useEffect(() => {
-    async function getGoals(url: string) {
-      const response = await fetch(url);
-      const result: Promise<Goal[]> = await response.json();
-      setGoals(await result);
+    async function getGoals() {
+      setGoals(await ApiGoalsClient.getAll());
     }
 
-    getGoals("http://localhost:3000/api/goals");
+    getGoals();
   }, [resfreshKey]);
 
   return (

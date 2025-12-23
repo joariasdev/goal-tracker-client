@@ -1,5 +1,5 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import { type Goal, type GoalView } from "../models/Goal";
+import ApiGoalsClient from "../api/apiGoalsClient";
 
 interface GoalFormProps {
   syncWithDb: () => void;
@@ -12,27 +12,13 @@ export default function GoalForm({ syncWithDb }: GoalFormProps) {
     setTitle(event.target.value);
   };
 
-  const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>
-  ): Promise<Goal> => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const goalData: GoalView = { title };
-
-    const response = await fetch("http://localhost:3000/api/goals", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(goalData),
-    });
-
-    const result: Goal = await response.json();
+    const createdGoal = await ApiGoalsClient.create({ title });
 
     setTitle("");
     syncWithDb();
-
-    return result;
   };
 
   return (
@@ -45,7 +31,6 @@ export default function GoalForm({ syncWithDb }: GoalFormProps) {
           name="title"
           value={title}
           onChange={handleChange}
-          
         />
         <input type="submit" value="Save" className="primary" />
       </form>

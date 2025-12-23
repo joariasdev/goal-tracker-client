@@ -1,5 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import type { Goal, GoalView } from "../models/Goal";
+import type { Goal } from "../models/Goal";
+import ApiGoalsClient from "../api/apiGoalsClient";
 
 interface GoalCardProps {
   goals: Goal[];
@@ -18,20 +19,11 @@ export default function GoalCard({ goals, id, syncWithDb }: GoalCardProps) {
     setIsDeleting(true);
   };
 
-  const handleDeleteConfirm = async (): Promise<Goal> => {
-    const response = await fetch(`http://localhost:3000/api/goals/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    const result: Goal = await response.json();
+  const handleDeleteConfirm = async () => {
+    const deletedGoal = await ApiGoalsClient.delete(id);
 
     setIsDeleting(false);
     syncWithDb();
-
-    return result;
   };
 
   const handleDeleteCancel = () => {
@@ -43,27 +35,14 @@ export default function GoalCard({ goals, id, syncWithDb }: GoalCardProps) {
     setTitle(selectedGoal.title);
   };
 
-  const handleEditConfirm = async (
-    e: FormEvent<HTMLElement>
-  ): Promise<Goal> => {
+  const handleEditConfirm = async (e: FormEvent<HTMLElement>) => {
     e.preventDefault();
 
-    const updatedGoal: GoalView = { title };
-
-    const response = await fetch(`http://localhost:3000/api/goals/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(updatedGoal),
-    });
-
-    const result: Goal = await response.json();
+    const nextGoal: Goal = { ...selectedGoal, title };
+    const updatedGoal = await ApiGoalsClient.update(id, nextGoal);
 
     setIsEditing(false);
     syncWithDb();
-
-    return result;
   };
 
   const handleEditCancel = () => {
@@ -103,11 +82,14 @@ export default function GoalCard({ goals, id, syncWithDb }: GoalCardProps) {
                 <p>{selectedGoal.title}</p>
                 <div className="row fluid">
                   <button onClick={handleEditClick} className="tertiary col-sm">
-                  Edit
-                </button>
-                <button onClick={handleDeleteClick} className="secondary col-sm">
-                  Delete
-                </button>
+                    Edit
+                  </button>
+                  <button
+                    onClick={handleDeleteClick}
+                    className="secondary col-sm"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             )}
