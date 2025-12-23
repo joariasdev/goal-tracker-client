@@ -8,9 +8,11 @@ interface GoalListProps {
 
 export default function GoalList({ goals, onGoalClick }: GoalListProps) {
   const goalElements = goals.map((g) => (
-    <p key={g.id} id={String(g.id)} onClick={onGoalClick}>
-      {g.title}
-    </p>
+    <div key={g.id} className="card fluid">
+      <p id={String(g.id)} onClick={onGoalClick}>
+        {g.title}
+      </p>
+    </div>
   ));
 
   return (

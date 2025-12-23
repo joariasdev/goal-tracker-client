@@ -24,7 +24,7 @@ function App() {
       setGoals(await result);
     }
 
-    getGoals("http://localhost:3000/goals");
+    getGoals("http://localhost:3000/api/goals");
   }, [resfreshKey]);
 
   return (

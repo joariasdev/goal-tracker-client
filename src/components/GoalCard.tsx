@@ -19,7 +19,7 @@ export default function GoalCard({ goals, id, syncWithDb }: GoalCardProps) {
   };
 
   const handleDeleteConfirm = async (): Promise<Goal> => {
-    const response = await fetch(`http://localhost:3000/goals/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/goals/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -43,12 +43,14 @@ export default function GoalCard({ goals, id, syncWithDb }: GoalCardProps) {
     setTitle(selectedGoal.title);
   };
 
-  const handleEditConfirm = async (e: FormEvent<HTMLElement>): Promise<Goal> => {
+  const handleEditConfirm = async (
+    e: FormEvent<HTMLElement>
+  ): Promise<Goal> => {
     e.preventDefault();
 
     const updatedGoal: GoalView = { title };
 
-    const response = await fetch(`http://localhost:3000/goals/${id}`, {
+    const response = await fetch(`http://localhost:3000/api/goals/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -64,7 +66,7 @@ export default function GoalCard({ goals, id, syncWithDb }: GoalCardProps) {
     return result;
   };
 
-    const handleEditCancel = () => {
+  const handleEditCancel = () => {
     setIsEditing(false);
   };
 
@@ -80,7 +82,7 @@ export default function GoalCard({ goals, id, syncWithDb }: GoalCardProps) {
             <h3>Selected Goal: </h3>
             {isEditing ? (
               <form>
-                <div>
+                <div className="input-group fluid">
                   <input
                     type="text"
                     id="title"
@@ -89,22 +91,33 @@ export default function GoalCard({ goals, id, syncWithDb }: GoalCardProps) {
                     onChange={handleChange}
                   />
                 </div>
-                <br />
-                <button onClick={handleEditConfirm}>Save</button>
-                <button onClick={handleEditCancel}>Cancel</button>
+                <div className="input-group fluid">
+                  <button onClick={handleEditConfirm} className="primary">
+                    Save
+                  </button>
+                  <button onClick={handleEditCancel}>Cancel</button>
+                </div>
               </form>
             ) : (
-              <div>
+              <div className="input-group vertical container">
                 <p>{selectedGoal.title}</p>
-                <button onClick={handleEditClick}>Edit</button>
-                <button onClick={handleDeleteClick}>Delete</button>
+                <div className="row fluid">
+                  <button onClick={handleEditClick} className="tertiary col-sm">
+                  Edit
+                </button>
+                <button onClick={handleDeleteClick} className="secondary col-sm">
+                  Delete
+                </button>
+                </div>
               </div>
             )}
           </div>
           {isDeleting && (
             <div>
               <p>Are you sure you want to delete this goal?</p>
-              <button onClick={handleDeleteConfirm}>Yes</button>
+              <button onClick={handleDeleteConfirm} className="secondary">
+                Yes
+              </button>
               <button onClick={handleDeleteCancel}>Cancel</button>
             </div>
           )}

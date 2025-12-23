@@ -19,7 +19,7 @@ export default function GoalForm({ syncWithDb }: GoalFormProps) {
 
     const goalData: GoalView = { title };
 
-    const response = await fetch("http://localhost:3000/goals", {
+    const response = await fetch("http://localhost:3000/api/goals", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -37,7 +37,7 @@ export default function GoalForm({ syncWithDb }: GoalFormProps) {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="input-group vertical">
         <label htmlFor="title">Add new goal: </label>
         <input
           type="text"
@@ -45,8 +45,9 @@ export default function GoalForm({ syncWithDb }: GoalFormProps) {
           name="title"
           value={title}
           onChange={handleChange}
+          
         />
-        <input type="submit" value="Save" />
+        <input type="submit" value="Save" className="primary" />
       </form>
     </div>
   );
