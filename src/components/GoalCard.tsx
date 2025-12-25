@@ -1,6 +1,9 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState /* type ChangeEvent  type FormEvent */ } from "react";
 import type { Goal, GoalAction } from "../models/Goal";
 import ApiGoalsClient from "../api/apiGoalsClient";
+import DeleteConfirmation from "./DeleteConfirmation";
+import GoalEditForm from "./GoalEditForm";
+import GoalDetail from "./GoalDetail";
 
 interface GoalCardProps {
   goals: Goal[];
@@ -8,49 +11,30 @@ interface GoalCardProps {
   dispatch: ({ type, payload }: GoalAction) => void;
 }
 
+type FormStatus = "viewing" | "editing" | "deleting";
+
 export default function GoalCard({ goals, id, dispatch }: GoalCardProps) {
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
-  const [title, setTitle] = useState<string>("");
+  const [status, setStatus] = useState<FormStatus>("viewing");
 
   const selectedGoal = goals.filter((goal) => goal.id === id)[0];
 
   const handleDeleteClick = () => {
-    setIsDeleting(true);
+    setStatus("deleting");
+  };
+
+  const handleCancelClick = () => {
+    setStatus("viewing");
+  };
+
+  const handleEditClick = () => {
+    setStatus("editing");
   };
 
   const handleDeleteConfirm = async () => {
     const deletedGoal = await ApiGoalsClient.delete(id);
 
-    setIsDeleting(false);
+    setStatus("viewing");
     dispatch({ type: "delete", payload: deletedGoal });
-  };
-
-  const handleDeleteCancel = () => {
-    setIsDeleting(false);
-  };
-
-  const handleEditClick = () => {
-    setIsEditing(true);
-    setTitle(selectedGoal.title);
-  };
-
-  const handleEditConfirm = async (e: FormEvent<HTMLElement>) => {
-    e.preventDefault();
-
-    const nextGoal: Goal = { ...selectedGoal, title };
-    const updatedGoal = await ApiGoalsClient.update(id, nextGoal);
-
-    setIsEditing(false);
-    dispatch({ type: "update", payload: updatedGoal });
-  };
-
-  const handleEditCancel = () => {
-    setIsEditing(false);
-  };
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    setTitle(event.target.value);
   };
 
   return (
@@ -59,49 +43,26 @@ export default function GoalCard({ goals, id, dispatch }: GoalCardProps) {
         <div>
           <div>
             <h3>Selected Goal: </h3>
-            {isEditing ? (
-              <form>
-                <div className="input-group fluid">
-                  <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    value={title}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="input-group fluid">
-                  <button onClick={handleEditConfirm} className="primary">
-                    Save
-                  </button>
-                  <button onClick={handleEditCancel}>Cancel</button>
-                </div>
-              </form>
+            {status === "editing" ? (
+              <GoalEditForm
+                handleEditCancel={handleCancelClick}
+                dispatch={dispatch}
+                setStatus={setStatus}
+                selectedGoal={selectedGoal}
+              />
             ) : (
-              <div className="input-group vertical container">
-                <p>{selectedGoal.title}</p>
-                <div className="row fluid">
-                  <button onClick={handleEditClick} className="tertiary col-sm">
-                    Edit
-                  </button>
-                  <button
-                    onClick={handleDeleteClick}
-                    className="secondary col-sm"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
+              <GoalDetail
+                selectedGoal={selectedGoal}
+                handleEditClick={handleEditClick}
+                handleDeleteClick={handleDeleteClick}
+              />
             )}
           </div>
-          {isDeleting && (
-            <div>
-              <p>Are you sure you want to delete this goal?</p>
-              <button onClick={handleDeleteConfirm} className="secondary">
-                Yes
-              </button>
-              <button onClick={handleDeleteCancel}>Cancel</button>
-            </div>
+          {status === "deleting" && (
+            <DeleteConfirmation
+              handleDeleteConfirm={handleDeleteConfirm}
+              handleDeleteCancel={handleCancelClick}
+            />
           )}
         </div>
       )}
