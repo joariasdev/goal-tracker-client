@@ -1,18 +1,13 @@
 import GoalCard from "./components/GoalCard";
 import GoalForm from "./components/GoalForm";
 import GoalList from "./components/GoalList";
-import { useEffect, useState, type MouseEvent } from "react";
-import type { Goal } from "./models/Goal";
+import { useEffect, useReducer, useState, type MouseEvent } from "react";
 import ApiGoalsClient from "./api/apiGoalsClient";
+import goalsReducer from "./services/goalReducer";
 
 function App() {
-  const [goals, setGoals] = useState<Goal[]>([]);
-  const [resfreshKey, setRefreshKey] = useState<number>(0);
+  const [goals, dispatch] = useReducer(goalsReducer, []);
   const [selectedGoalId, setSelectedGoalId] = useState<number>(0);
-
-  const handleRefresh = () => {
-    setRefreshKey((prevRefresh) => prevRefresh + 1);
-  };
 
   const handleGoalClick = (event: MouseEvent<HTMLElement>) => {
     setSelectedGoalId(Number(event.currentTarget.id));
@@ -20,17 +15,17 @@ function App() {
 
   useEffect(() => {
     async function getGoals() {
-      setGoals(await ApiGoalsClient.getAll());
+      const fetchedGoals = await ApiGoalsClient.getAll();
+      dispatch({ type: "get", payload: fetchedGoals });
     }
-
     getGoals();
-  }, [resfreshKey]);
+  }, []);
 
   return (
     <main>
       <GoalList goals={goals} onGoalClick={handleGoalClick} />
-      <GoalForm syncWithDb={handleRefresh} />
-      <GoalCard goals={goals} id={selectedGoalId} syncWithDb={handleRefresh} />
+      <GoalForm dispatch={dispatch} />
+      <GoalCard goals={goals} id={selectedGoalId} dispatch={dispatch} />
     </main>
   );
 }

@@ -1,11 +1,12 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import ApiGoalsClient from "../api/apiGoalsClient";
+import type { GoalAction } from "../models/Goal";
 
 interface GoalFormProps {
-  syncWithDb: () => void;
+  dispatch: ({ type, payload }: GoalAction) => void;
 }
 
-export default function GoalForm({ syncWithDb }: GoalFormProps) {
+export default function GoalForm({ dispatch }: GoalFormProps) {
   const [title, setTitle] = useState<string>("");
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -18,7 +19,8 @@ export default function GoalForm({ syncWithDb }: GoalFormProps) {
     const createdGoal = await ApiGoalsClient.create({ title });
 
     setTitle("");
-    syncWithDb();
+
+    dispatch({ type: "create", payload: { ...createdGoal } });
   };
 
   return (

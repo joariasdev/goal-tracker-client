@@ -1,14 +1,14 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import type { Goal } from "../models/Goal";
+import type { Goal, GoalAction } from "../models/Goal";
 import ApiGoalsClient from "../api/apiGoalsClient";
 
 interface GoalCardProps {
   goals: Goal[];
   id: number;
-  syncWithDb: () => void;
+  dispatch: ({ type, payload }: GoalAction) => void;
 }
 
-export default function GoalCard({ goals, id, syncWithDb }: GoalCardProps) {
+export default function GoalCard({ goals, id, dispatch }: GoalCardProps) {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
@@ -23,7 +23,7 @@ export default function GoalCard({ goals, id, syncWithDb }: GoalCardProps) {
     const deletedGoal = await ApiGoalsClient.delete(id);
 
     setIsDeleting(false);
-    syncWithDb();
+    dispatch({ type: "delete", payload: deletedGoal });
   };
 
   const handleDeleteCancel = () => {
@@ -42,7 +42,7 @@ export default function GoalCard({ goals, id, syncWithDb }: GoalCardProps) {
     const updatedGoal = await ApiGoalsClient.update(id, nextGoal);
 
     setIsEditing(false);
-    syncWithDb();
+    dispatch({ type: "update", payload: updatedGoal });
   };
 
   const handleEditCancel = () => {
