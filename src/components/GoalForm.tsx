@@ -1,39 +1,40 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
 import ApiGoalsClient from "../api/apiGoalsClient";
-import type { GoalAction } from "../models/Goal";
+import type { GoalAction, GoalView } from "../models/Goal";
+import { useForm, type SubmitHandler } from "react-hook-form";
 
 interface GoalFormProps {
   dispatch: ({ type, payload }: GoalAction) => void;
 }
 
 export default function GoalForm({ dispatch }: GoalFormProps) {
-  const [title, setTitle] = useState<string>("");
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<GoalView>();
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    setTitle(event.target.value);
-  };
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
+  const onSubmit: SubmitHandler<GoalView> = async (data: GoalView) => {
+    const { title } = data;
     const createdGoal = await ApiGoalsClient.create({ title });
-
-    setTitle("");
-
+    reset();
     dispatch({ type: "create", payload: { ...createdGoal } });
   };
 
   return (
     <div>
-      <form onSubmit={handleSubmit} className="input-group vertical">
+      <form onSubmit={handleSubmit(onSubmit)} className="input-group vertical">
         <label htmlFor="title">Add new goal: </label>
-        <input
-          type="text"
-          id="title"
-          name="title"
-          value={title}
-          onChange={handleChange}
-        />
+        {
+          <input
+            type="text"
+            id="title"
+            {...register("title", {
+              required: { value: true, message: "This field can't be empty" },
+            })}
+          />
+        }
+        {errors.title && <span>{errors.title.message}</span>}
         <input type="submit" value="Save" className="primary" />
       </form>
     </div>
