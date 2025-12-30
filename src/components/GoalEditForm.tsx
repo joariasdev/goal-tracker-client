@@ -1,6 +1,6 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
 import ApiGoalsClient from "../api/apiGoalsClient";
 import type { Goal, GoalAction } from "../models/Goal";
+import { useForm, type SubmitHandler } from "react-hook-form";
 
 type FormStatus = "viewing" | "editing" | "deleting";
 
@@ -17,15 +17,16 @@ export default function GoalEditForm({
   setStatus,
   selectedGoal,
 }: GoalEditFormProps) {
-  const [title, setTitle] = useState<string>(selectedGoal.title);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<Goal>({
+    defaultValues: { id: selectedGoal.id, title: selectedGoal.title },
+  });
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
-    setTitle(event.target.value);
-  };
-
-  const handleEditConfirm = async (e: FormEvent<HTMLElement>) => {
-    e.preventDefault();
-
+  const onEditConfirm: SubmitHandler<Goal> = async (data: Goal) => {
+    const { title } = data;
     const nextGoal: Goal = { ...selectedGoal, title };
     const updatedGoal = await ApiGoalsClient.update(selectedGoal.id, nextGoal);
 
@@ -34,21 +35,22 @@ export default function GoalEditForm({
   };
 
   return (
-    <form>
+    <form onSubmit={handleSubmit(onEditConfirm)}>
       <div className="input-group fluid">
-        <input
-          type="text"
-          id="title"
-          name="title"
-          value={title}
-          onChange={handleChange}
-        />
+        {
+          <input
+            type="text"
+            id="title"
+            {...register("title", {
+              required: { value: true, message: "This field can't be empty" },
+            })}
+          />
+        }
+        {errors.title && <span>{errors.title.message}</span>}
       </div>
       <div className="input-group fluid">
-        <button onClick={handleEditConfirm} className="primary">
-          Save
-        </button>
-        <button onClick={handleEditCancel}>Cancel</button>
+        <button className="primary">Save</button>
+        <button type="button" onClick={handleEditCancel}>Cancel</button>
       </div>
     </form>
   );

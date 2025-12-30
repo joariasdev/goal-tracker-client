@@ -15,7 +15,6 @@ type FormStatus = "viewing" | "editing" | "deleting";
 
 export default function GoalCard({ goals, id, dispatch }: GoalCardProps) {
   const [status, setStatus] = useState<FormStatus>("viewing");
-
   const selectedGoal = goals.filter((goal) => goal.id === id)[0];
 
   const handleDeleteClick = () => {
