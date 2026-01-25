@@ -2,12 +2,14 @@ import { Link, useNavigate } from "react-router";
 import ApiUsersClient from "../api/apiUsersClient";
 import type { UserView } from "../models/User";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import validator from "validator";
 
 export default function Register() {
   const navigate = useNavigate();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<UserView>({
     defaultValues: {
@@ -22,6 +24,7 @@ export default function Register() {
     const response = await ApiUsersClient.register(userData);
 
     if (response.status === 200) {
+      reset();
       navigate("/success", {
         state: { message: response.result.message },
       });
@@ -41,10 +44,7 @@ export default function Register() {
                 id="firstName"
                 placeholder="Enter your name..."
                 {...register("firstName", {
-                  required: {
-                    value: true,
-                    message: "First name can't be empty.",
-                  },
+                  required: "What's your name?",
                 })}
               />
               {errors.firstName && <p>{errors.firstName.message}</p>}
@@ -58,10 +58,7 @@ export default function Register() {
                 id="lastName"
                 placeholder="Enter your surname..."
                 {...register("lastName", {
-                  required: {
-                    value: true,
-                    message: "Last name can't be empty.",
-                  },
+                  required: "What's your last name?",
                 })}
               />
               {errors.lastName && <p>{errors.lastName.message}</p>}
@@ -75,14 +72,10 @@ export default function Register() {
                 id="email"
                 placeholder="Enter your email..."
                 {...register("email", {
-                  required: {
-                    value: true,
-                    message: "Email can't be empty.",
-                  },
-                  pattern: {
-                    value: /\S+@\S+\.\S+/,
-                    message: "Please enter a valid email address",
-                  },
+                  required: "Email can't be empty.",
+                  validate: (value) =>
+                    validator.isEmail(value) ||
+                    "Please use a valid email address.",
                 })}
               />
               {errors.email && <p>{errors.email.message}</p>}
@@ -96,10 +89,10 @@ export default function Register() {
                 id="password"
                 placeholder="Enter your password... "
                 {...register("password", {
-                  required: {
-                    value: true,
-                    message: "Password can't be empty.",
-                  },
+                  required: "Password can't be empty.",
+                  validate: (value) =>
+                    validator.isStrongPassword(value) ||
+                    "Please choose a more secure password. It should be longer than 8 characters and include at least a number, symbol and uppercase letter.",
                 })}
               />
               {errors.password && <p>{errors.password.message}</p>}
