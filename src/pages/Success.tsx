@@ -1,7 +1,12 @@
-import { Link, useLocation } from "react-router";
+import { Link, Navigate, useLocation } from "react-router";
 
 export default function Success() {
   const state = useLocation().state;
+
+  if (!state) {
+    return <Navigate to="/login" />;
+  }
+
   return (
     <div className="container">
       <p>{state.message}</p>

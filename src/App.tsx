@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
@@ -18,10 +18,12 @@ function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="/register" element={<Register />}></Route>
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/success" element={<Success />}></Route>
+        <Route element={<AuthenticationRoute />}>
+          <Route path="/" element={<Home />}></Route>
+          <Route path="/register" element={<Register />}></Route>
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/success" element={<Success />}></Route>
+        </Route>
 
         <Route element={<ProtectedRoute />}>
           <Route path="/goals" element={<Goals />}></Route>
@@ -29,6 +31,11 @@ function AppRoutes() {
       </Routes>
     </BrowserRouter>
   );
+}
+
+function AuthenticationRoute() {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <Navigate to="/goals" /> : <Outlet />;
 }
 
 function App() {
