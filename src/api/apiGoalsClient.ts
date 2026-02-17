@@ -5,13 +5,17 @@ export default class ApiGoalsClient {
   private static ENDPOINT: string = "/api/goals";
 
   static async getAll(): Promise<Goal[]> {
-    const response = await fetch(this.BASE_URL + this.ENDPOINT);
+    const response = await fetch(this.BASE_URL + this.ENDPOINT, {
+      credentials: "include",
+    });
     const result: Promise<Goal[]> = await response.json();
     return result;
   }
 
   static async getById(id: number): Promise<Goal> {
-    const response = await fetch(`${this.BASE_URL + this.ENDPOINT}/${id}`);
+    const response = await fetch(`${this.BASE_URL + this.ENDPOINT}/${id}`, {
+      credentials: "include",
+    });
     const result: Promise<Goal> = await response.json();
     return result;
   }
@@ -22,6 +26,7 @@ export default class ApiGoalsClient {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify(goalBody),
     });
 
@@ -35,6 +40,7 @@ export default class ApiGoalsClient {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
       body: JSON.stringify(goalBody),
     });
 
@@ -48,6 +54,7 @@ export default class ApiGoalsClient {
       headers: {
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     const result: Goal = await response.json();

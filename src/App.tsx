@@ -4,8 +4,17 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Goals from "./pages/Goals";
 import Success from "./pages/Success";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { useAuth } from "./hooks/useAuth";
 
-function App() {
+function AppRoutes() {
+  const { isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <BrowserRouter>
       <Routes>
@@ -13,9 +22,20 @@ function App() {
         <Route path="/register" element={<Register />}></Route>
         <Route path="/login" element={<Login />}></Route>
         <Route path="/success" element={<Success />}></Route>
-        <Route path="/goals" element={<Goals />}></Route>
+
+        <Route element={<ProtectedRoute />}>
+          <Route path="/goals" element={<Goals />}></Route>
+        </Route>
       </Routes>
     </BrowserRouter>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
   );
 }
 

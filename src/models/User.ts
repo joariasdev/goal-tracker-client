@@ -8,3 +8,8 @@ export interface UserView {
 export interface User extends UserView {
   id: number;
 }
+
+export interface UserLoginView {
+  email: string;
+  password: string;
+}
