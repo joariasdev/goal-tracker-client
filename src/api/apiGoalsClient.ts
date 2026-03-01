@@ -1,11 +1,12 @@
 import type { Goal, GoalView } from "../models/Goal";
+import ApiUsersClient from "./apiUsersClient";
 
 export default class ApiGoalsClient {
   private static BASE_URL: string = import.meta.env.VITE_API_URL;
   private static ENDPOINT: string = "/api/goals";
 
   static async getAll(): Promise<Goal[]> {
-    const response = await fetch(this.BASE_URL + this.ENDPOINT, {
+    const response = await authorizedFetch(this.BASE_URL + this.ENDPOINT, {
       credentials: "include",
     });
     const result: Promise<Goal[]> = await response.json();
@@ -21,7 +22,7 @@ export default class ApiGoalsClient {
   }
 
   static async create(goalBody: GoalView): Promise<Goal> {
-    const response = await fetch(this.BASE_URL + this.ENDPOINT, {
+    const response = await authorizedFetch(this.BASE_URL + this.ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -61,4 +62,20 @@ export default class ApiGoalsClient {
 
     return result;
   }
+}
+
+async function authorizedFetch(url: RequestInfo | URL, options: RequestInit) {
+  let response = await fetch(url, options);
+
+  if (response.status === 401) {
+    const refresh = await ApiUsersClient.refresh();
+
+    if (refresh.status !== 200) {
+      // Notify that user should log in
+    }
+
+    response = await fetch(url, options);
+  }
+
+  return response;
 }

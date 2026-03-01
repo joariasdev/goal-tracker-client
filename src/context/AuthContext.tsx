@@ -6,10 +6,10 @@ type UserPayload = {
   email: string;
   firstName: string;
   lastName: string;
-};
+} | null;
 
 interface AuthContextType {
-  user: UserPayload | null;
+  user: UserPayload;
   isLoading: boolean;
   isAuthenticated: boolean;
   updateUser: (user: UserPayload) => void;
@@ -23,7 +23,7 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<UserPayload | null>(null);
+  const [user, setUser] = useState<UserPayload>(null);
   const [isLoading, setIsLoading] = useState(true);
   const isAuthenticated: boolean = !!user;
 

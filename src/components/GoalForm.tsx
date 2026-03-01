@@ -1,4 +1,5 @@
 import ApiGoalsClient from "../api/apiGoalsClient";
+import { useAuth } from "../hooks/useAuth";
 import type { GoalAction, GoalView } from "../models/Goal";
 import { useForm, type SubmitHandler } from "react-hook-form";
 
@@ -14,9 +15,14 @@ export default function GoalForm({ dispatch }: GoalFormProps) {
     formState: { errors },
   } = useForm<GoalView>();
 
+  const { updateUser } = useAuth();
+
   const onSubmit: SubmitHandler<GoalView> = async (data: GoalView) => {
     const { title } = data;
     const createdGoal = await ApiGoalsClient.create({ title });
+    if (!createdGoal.id) {
+      updateUser(null);
+    }
     reset();
     dispatch({ type: "create", payload: { ...createdGoal } });
   };

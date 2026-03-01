@@ -46,4 +46,15 @@ export default class ApiUsersClient {
 
     return { status, result };
   }
+
+  static async refresh() {
+    const response = await fetch(this.BASE_URL + this.ENDPOINT + "/refresh", {
+      credentials: "include",
+    });
+
+    const { status } = response;
+    const result = await response.json();
+
+    return { status, result };
+  }
 }
