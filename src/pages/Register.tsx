@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "react-router";
-import ApiUsersClient from "../api/apiUsersClient";
 import type { UserView } from "../models/User";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import validator from "validator";
+import useAuthClient from "../hooks/useAuthClient";
+import type { errorOrNull } from "../models/Error";
+import { useState } from "react";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -20,15 +22,21 @@ export default function Register() {
     },
   });
 
-  const onSubmit: SubmitHandler<UserView> = async (userData: UserView) => {
-    const response = await ApiUsersClient.register(userData);
+  const [error, setError] = useState<errorOrNull>(null);
 
-    if (response.status === 200) {
-      reset();
-      navigate("/success", {
-        state: { message: response.result.message },
-      });
+  const { registerUser } = useAuthClient();
+
+  const onSubmit: SubmitHandler<UserView> = async (userData: UserView) => {
+    const response = await registerUser(userData);
+
+    if (response.error) {
+      setError(response.error);
+      return;
     }
+
+    reset();
+    setError(null);
+    navigate("/goals");
   };
 
   return (
@@ -78,7 +86,12 @@ export default function Register() {
                     "Please use a valid email address.",
                 })}
               />
-              {errors.email && <p>{errors.email.message}</p>}
+              {(errors.email && <p>{errors.email.message}</p>) || (
+                // TODO: This error should be removed when changes made to the input field
+                <div>
+                  <span>{error?.message}</span>
+                </div>
+              )}
             </div>
           }
           {

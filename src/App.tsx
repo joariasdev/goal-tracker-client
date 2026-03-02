@@ -3,7 +3,6 @@ import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Goals from "./pages/Goals";
-import Success from "./pages/Success";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
@@ -22,7 +21,6 @@ function AppRoutes() {
           <Route path="/" element={<Home />}></Route>
           <Route path="/register" element={<Register />}></Route>
           <Route path="/login" element={<Login />}></Route>
-          <Route path="/success" element={<Success />}></Route>
         </Route>
 
         <Route element={<ProtectedRoute />}>

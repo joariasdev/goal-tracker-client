@@ -3,11 +3,7 @@ import { Link } from "react-router";
 import type { UserLoginView } from "../models/User";
 import useAuthClient from "../hooks/useAuthClient";
 import { useNavigate } from "react-router";
-
-type errorProps = {
-  code: string;
-  message: string;
-} | null;
+import type { errorOrNull } from "../models/Error";
 
 export default function Login() {
   const [loginCredential, setLoginCredentials] = useState<UserLoginView>({
@@ -15,7 +11,7 @@ export default function Login() {
     password: "",
   });
 
-  const [error, setError] = useState<errorProps>(null);
+  const [error, setError] = useState<errorOrNull>(null);
 
   const navigate = useNavigate();
   const { login } = useAuthClient();
