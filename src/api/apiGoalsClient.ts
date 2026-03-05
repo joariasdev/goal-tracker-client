@@ -1,4 +1,5 @@
 import type { Goal, GoalView } from "../models/Goal";
+import { navigation } from "../utils/navigation";
 import ApiUsersClient from "./apiUsersClient";
 
 export default class ApiGoalsClient {
@@ -71,7 +72,7 @@ async function authorizedFetch(url: RequestInfo | URL, options: RequestInit) {
     const refresh = await ApiUsersClient.refresh();
 
     if (refresh.status !== 200) {
-      // Notify that user should log in
+      navigation.navigate("/login");
     }
 
     response = await fetch(url, options);
